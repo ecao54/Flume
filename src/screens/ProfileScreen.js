@@ -59,7 +59,7 @@ const ProfileScreen = ({ navigation, route }) => {
               {profile ? `${profile.firstName} ${profile.lastName}` : 'User Name'}
             </Text>
             <Text style={styles.profileId}>
-              ID: {profile?.userId ? `...${profile.userId.substring(profile.userId.length - 6)}` : 'Not available'}
+              @{profile?.username || 'username'}
             </Text>
           </View>
         </View>

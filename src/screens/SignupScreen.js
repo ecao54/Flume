@@ -13,6 +13,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignupScreen = ({ navigation }) => {
+  const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [balance, setBalance] = useState('1000');
@@ -20,26 +21,44 @@ const SignupScreen = ({ navigation }) => {
   
   const handleSignup = async () => {
     // Validate inputs
-    if (!firstName || !lastName) {
-      Alert.alert('Error', 'Please fill in your name');
+    if (!username || !firstName || !lastName) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    // Validate username format
+    if (!/^[a-zA-Z0-9_]{3,15}$/.test(username)) {
+      Alert.alert('Error', 'Username must be 3-15 characters long and contain only letters, numbers, and underscores');
       return;
     }
     
     setIsLoading(true);
     try {
-      // Generate a simple userId
-      const userId = 'user_' + Date.now().toString();
+      // Check if username already exists
+      const existingProfiles = await AsyncStorage.getItem('userProfiles');
+      const profiles = existingProfiles ? JSON.parse(existingProfiles) : [];
+      
+      if (profiles.some(profile => profile.username === username)) {
+        Alert.alert('Error', 'Username already taken');
+        setIsLoading(false);
+        return;
+      }
       
       // Create user profile
       const userProfile = {
-        userId,
+        userId: username,
+        username,
         firstName,
         lastName,
         balance: parseFloat(balance) || 1000,
         createdAt: new Date().toISOString()
       };
       
-      // Save to AsyncStorage
+      // Add to profiles array
+      profiles.push(userProfile);
+      await AsyncStorage.setItem('userProfiles', JSON.stringify(profiles));
+      
+      // Save current user profile
       await AsyncStorage.setItem('userProfile', JSON.stringify(userProfile));
       
       navigation.reset({
@@ -47,7 +66,8 @@ const SignupScreen = ({ navigation }) => {
         routes: [{ 
           name: 'Home', 
           params: { 
-            userId: userId,
+            userId: username,
+            username,
             customerName: `${firstName} ${lastName}`,
             balance: parseFloat(balance) || 1000
           } 
@@ -68,6 +88,16 @@ const SignupScreen = ({ navigation }) => {
         <Text style={styles.subtitle}>Join Flume for seamless payments</Text>
         
         <View style={styles.formContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Username (letters, numbers, underscores only)"
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
+            autoCorrect={false}
+            maxLength={15}
+          />
+          
           <TextInput
             style={styles.input}
             placeholder="First Name"
@@ -119,7 +149,7 @@ const SignupScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7', // iOS light background
+    backgroundColor: '#F2F2F7',
   },
   scrollContent: {
     flexGrow: 1,
@@ -136,7 +166,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     marginBottom: 30,
-    color: '#8E8E93', // iOS gray
+    color: '#8E8E93',
     fontFamily: 'System',
   },
   formContainer: {
@@ -158,7 +188,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#007AFF', // iOS blue
+    backgroundColor: '#007AFF',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -176,11 +206,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    color: '#8E8E93', // iOS gray
+    color: '#8E8E93',
     fontSize: 16,
   },
   loginText: {
-    color: '#007AFF', // iOS blue
+    color: '#007AFF',
     fontSize: 16,
     fontWeight: '500',
   },

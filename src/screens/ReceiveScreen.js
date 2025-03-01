@@ -1,86 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, SafeAreaView } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  SafeAreaView,
+  Platform,
+  Alert ,
+  NativeModules
+} from 'react-native';
 import BLEAdvertiser from 'react-native-ble-advertiser';
 import ButtonBar from '../components/ButtonBar';
 
+const BLE_COMPANY_ID = 0x4C;
+
 const ReceiveScreen = ({ navigation, route }) => {
-  const { customerId, accountId, customerName } = route.params || {};
+  const { userId, username, customerName, balance } = route.params || {};
   const [isAdvertising, setIsAdvertising] = useState(false);
   const [error, setError] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(300); // 5 minutes
-  
+
+  // Initialize BLE on component mount
   useEffect(() => {
-    // iOS-specific setup
-    BLEAdvertiser.setCompanyId(0x4C); // Apple's company ID
-    
-    // Clean up when component unmounts
-    return () => {
-      if (isAdvertising) {
-        BLEAdvertiser.stopBroadcast()
-          .then(() => console.log('Advertising stopped on unmount'))
-          .catch(error => console.error('Error stopping advertising:', error));
+    const initializeBLE = async () => {
+      try {
+        // Wait for BLE module to be ready
+        if (!BLEAdvertiser) {
+          throw new Error('BLE Advertiser not available');
+        }
+
+        if (Platform.OS === 'ios') {
+          // Ensure BLEAdvertiser is available before calling methods
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Give native module time to initialize
+          await BLEAdvertiser.setCompanyId(BLE_COMPANY_ID);
+        }
+        
+        const bluetoothEnabled = await BLEAdvertiser.checkAdvertisingSupport()
+          .catch(() => false);
+
+        if (!bluetoothEnabled) {
+          setError('Please enable Bluetooth to receive payments');
+          return;
+        }
+
+      } catch (error) {
+        console.error('BLE initialization error:', error);
+        setError('Bluetooth initialization failed. Please restart the app.');
       }
     };
-  }, [isAdvertising]);
-  
-  // Timer effect
+
+    initializeBLE();
+
+    // Cleanup function
+    return () => {
+      if (isAdvertising) {
+        stopAdvertising().catch(console.error);
+      }
+    };
+  }, []);
+
+  // Handle advertising timeout
   useEffect(() => {
     let timer;
     if (isAdvertising && timeRemaining > 0) {
       timer = setInterval(() => {
         setTimeRemaining(prev => prev - 1);
       }, 1000);
-    } else if (timeRemaining === 0 && isAdvertising) {
-      // Stop advertising when timer reaches zero
-      BLEAdvertiser.stopBroadcast()
-        .then(() => {
-          setIsAdvertising(false);
-          console.log('Advertising stopped due to timeout');
-        })
-        .catch(error => console.error('Error stopping advertising:', error));
+    } else if (timeRemaining === 0) {
+      stopAdvertising();
     }
-    
+
     return () => {
       if (timer) clearInterval(timer);
     };
   }, [isAdvertising, timeRemaining]);
-  
-  const toggleAdvertising = async () => {
+
+  const startAdvertising = async () => {
     try {
-      setError(null);
-      
-      if (isAdvertising) {
-        await BLEAdvertiser.stopBroadcast();
-        setIsAdvertising(false);
-        console.log('Stopped advertising');
-      } else {
-        if (!accountId) {
-          setError('No account information available');
-          return;
-        }
-        
-        // Generate a unique UUID or use a fixed one for your app
-        const uuid = "44C13E43-097A-9C9F-537F-5666A6840C08";
-        
-        // Encode account ID in major/minor values
-        // This is a simplified approach - in a real app, you'd use a more secure method
-        const accountIdStr = accountId.toString();
-        const major = parseInt(accountIdStr.substring(0, 4), 16) || 0xCD00;
-        const minor = parseInt(accountIdStr.substring(4, 8), 16) || 0x0003;
-        
-        await BLEAdvertiser.broadcast(uuid, major, minor);
-        
-        setIsAdvertising(true);
-        setTimeRemaining(300); // Reset timer to 5 minutes
-        console.log('Started advertising with account:', accountId);
+      if (!userId || !username) {
+        setError('User profile not available');
+        return;
       }
+  
+      // Create payload with user info, ensuring balance is a number
+      const payload = {
+        u: userId,
+        n: username,
+        b: typeof balance === 'number' ? balance : parseFloat(balance) || 0
+      };
+  
+      // Convert payload to bytes (limited to 31 bytes for BLE)
+      const payloadString = JSON.stringify(payload);
+      const bytes = Array.from(new TextEncoder().encode(payloadString));
+  
+      await BLEAdvertiser.broadcast(userId, 0x0001, 0x0001, {
+        manufacturerSpecificData: bytes,
+        includeDeviceName: false
+      });
+  
+      setIsAdvertising(true);
+      setTimeRemaining(300);
+      setError(null);
     } catch (error) {
-      console.error('Error toggling advertising:', error);
-      setError(error.message || 'Failed to start Bluetooth advertising');
-      setIsAdvertising(false);
+      console.error('Start advertising error:', error);
+      setError('Failed to start receiving. Please try again.');
     }
   };
-  
+
+  const stopAdvertising = async () => {
+    try {
+      await BLEAdvertiser.stopBroadcast();
+      setIsAdvertising(false);
+      setTimeRemaining(300);
+    } catch (error) {
+      console.error('Stop advertising error:', error);
+    }
+  };
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (isAdvertising) {
+        stopAdvertising();
+      }
+    };
+  }, [isAdvertising]);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
@@ -88,22 +133,27 @@ const ReceiveScreen = ({ navigation, route }) => {
         
         <View style={styles.accountInfo}>
           <Text style={styles.accountName}>{customerName || 'User'}</Text>
-          <Text style={styles.accountId}>Account: {accountId ? `...${accountId.substring(accountId.length - 6)}` : 'Not available'}</Text>
+          <Text style={styles.username}>@{username || 'username'}</Text>
         </View>
         
-        <Button
-          title={isAdvertising ? "Stop Receiving" : "Start Receiving"}
-          onPress={toggleAdvertising}
-          color="#007AFF" // iOS blue
-        />
+        <TouchableOpacity
+          style={[
+            styles.button,
+            isAdvertising ? styles.buttonStop : styles.buttonStart
+          ]}
+          onPress={isAdvertising ? stopAdvertising : startAdvertising}
+        >
+          <Text style={styles.buttonText}>
+            {isAdvertising ? "Stop Receiving" : "Start Receiving"}
+          </Text>
+        </TouchableOpacity>
         
         {isAdvertising && (
           <View style={styles.indicatorContainer}>
-            <View style={styles.indicator} />
-            <Text style={styles.status}>Your device is visible to nearby senders</Text>
-            <Text style={styles.statusDetail}>Waiting for payment...</Text>
+            <View style={[styles.indicator, { backgroundColor: '#34C759' }]} />
+            <Text style={styles.status}>Visible to nearby senders</Text>
             <Text style={styles.timer}>
-              Time remaining: {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
+              {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
             </Text>
           </View>
         )}
