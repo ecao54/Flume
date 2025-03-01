@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E9F5F5',
   },
   buttonText: {
+    fontFamily: 'Figtree',
     color: '#FBFBFC',
     fontSize: 16,
     fontWeight: '700',
