@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, ScrollView } from 'react-native';
 import NessieService from '../services/NessieService';
 import ButtonBar from '../components/ButtonBar';
 
 const HomeScreen = ({ navigation, route }) => {
+  const [transactions, setTransactions] = useState([]);
   const { customerId, accountId, customerName } = route.params || {};
   const [balance, setBalance] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,61 +26,36 @@ const HomeScreen = ({ navigation, route }) => {
     fetchBalance();
   }, [accountId]);
 
+
+  const EmptyState = () => (
+    <View style={styles.emptyStateContainer}>
+      <Text style={styles.emptyStateText}>
+        No transactions yet! Start by sending or receiving money to see your history here.
+      </Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
-        <Text style={styles.title}>Flume</Text>
-        <Text style={styles.subtitle}>Seamless Bluetooth Payments</Text>
-        
-        <View style={styles.accountContainer}>
-          <Text style={styles.greeting}>Hello, {customerName || 'User'}</Text>
-          
-          {isLoading ? (
-            <ActivityIndicator size="large" color="#007AFF" />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.title}>
+            <Image style={styles.logo} source={require('../assets/flume-logo.png')}/>
+           <Text style={styles.flume}>Flume</Text> 
+          </View>
+          <Text style={styles.subtitle}>PAST TRANSACTIONS</Text>
+          {transactions.length === 0 ? (
+            <EmptyState />
           ) : (
-            <View style={styles.balanceContainer}>
-              <Text style={styles.balanceLabel}>Available Balance</Text>
-              <Text style={styles.balanceAmount}>${balance !== null ? balance.toFixed(2) : '0.00'}</Text>
+            <View>
+              {/* Transaction list will go here */}
             </View>
           )}
-        </View>
-        
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => navigation.navigate('Send', { 
-              customerId, 
-              accountId,
-              customerName 
-            })}
-          >
-            <Text style={styles.buttonText}>Send Money</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => navigation.navigate('Receive', { 
-              customerId, 
-              accountId,
-              customerName 
-            })}
-          >
-            <Text style={styles.buttonText}>Receive Money</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.button, styles.historyButton]} 
-            onPress={() => navigation.navigate('History', { 
-              customerId, 
-              accountId 
-            })}
-          >
-            <Text style={styles.buttonText}>Transaction History</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </SafeAreaView>
       
       <ButtonBar navigation={navigation} activeScreen="Home" />
+      
     </View>
   );
 };
@@ -87,76 +63,54 @@ const HomeScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7', // iOS light background
+    backgroundColor: '#FBFBFC',
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    justifyContent: 'top',
+    alignItems: 'left',
     paddingBottom: 80, // Add padding to account for the button bar
   },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    fontFamily: 'System',
+    flexDirection: 'row',
+    marginBottom: 36,
+  },
+  logo: {
+    width: 42,
+    height: 42,
+    marginRight: 8
+  },
+  flume: {
+    fontSize: 40,
+    fontWeight: '800',
+    color: '#20859E',
+    fontFamily: 'Figtree',
+    fontStyle: 'italic'
   },
   subtitle: {
-    fontSize: 18,
-    marginBottom: 30,
-    color: '#8E8E93', // iOS gray
-    fontFamily: 'System',
-  },
-  accountContainer: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-  },
-  greeting: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 15,
-  },
-  balanceContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  balanceLabel: {
     fontSize: 14,
-    color: '#8E8E93', // iOS gray
-    marginBottom: 5,
-  },
-  balanceAmount: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#34C759', // iOS green
-  },
-  buttonContainer: {
-    width: '100%',
-  },
-  button: {
-    backgroundColor: '#007AFF', // iOS blue
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 10,
-    alignItems: 'center',
-  },
-  historyButton: {
-    backgroundColor: '#5856D6', // iOS purple
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
+    marginBottom: 20,
+    color: '#1B4965', 
     fontWeight: '600',
-    fontFamily: 'System',
+    fontFamily: 'Figtree',
   },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'top',
+    alignItems: 'left',
+    padding: 28,
+    marginTop: 26,
+  },
+  emptyStateContainer: {
+  },
+  emptyStateText: {
+    textAlign: 'center',
+    fontSize: 16,
+    paddingVertical: 16,
+    fontFamily: 'Figtree',
+    fontWeight: '500',
+    color: '#B3B3BB'
+  }
 });
 
 export default HomeScreen;
