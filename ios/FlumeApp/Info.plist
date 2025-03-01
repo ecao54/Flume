@@ -3,9 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>This app uses Bluetooth to send and receive payments with nearby users</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>This app uses Bluetooth to send and receive payments with nearby users</string>
+  	<string>This app uses Bluetooth to discover nearby payment receivers</string>
+  	<key>NSBluetoothPeripheralUsageDescription</key>
+  	<string>This app uses Bluetooth to discover nearby payment receivers</string>
+  	<key>UIBackgroundModes</key>
+  	<array>
+    	<string>bluetooth-central</string>
+    	<string>bluetooth-peripheral</string>
+  	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

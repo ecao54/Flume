@@ -18,7 +18,7 @@
     "react": "19.0.0",
     "react-material-symbols": "^4.4.0",
     "react-native": "0.78.0",
-    "react-native-ble-advertiser": "^0.0.17",
+    "react-native-ble-advertiser": "^1.0.0",
     "react-native-ble-plx": "^3.5.0",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.9.1",
