@@ -1,15 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ButtonBar = ({ navigation, activeScreen }) => {
   const insets = useSafeAreaInsets();
   
   const buttons = [
-    { name: 'Home', screen: 'Home' },
-    { name: 'Send', screen: 'Send' },
-    { name: 'Receive', screen: 'Receive' },
-    { name: 'Profile', screen: 'Profile' }
+    { name: 'Home', screen: 'Home', icon: require('../assets/home.png'), activeIcon: require('../assets/home-active.png')},
+    { name: 'Send', screen: 'Send', icon: require('../assets/send.png'), activeIcon: require('../assets/send-active.png') },
+    { name: 'Receive', screen: 'Receive', icon: require('../assets/receive.png'), activeIcon: require('../assets/receive-active.png')},
+    { name: 'Profile', screen: 'Profile', icon: require('../assets/profile.png'), activeIcon: require('../assets/profile-active.png')}
   ];
   
   const handlePress = (screenName) => {
@@ -19,6 +19,7 @@ const ButtonBar = ({ navigation, activeScreen }) => {
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       {buttons.map((button) => (
+        
         <TouchableOpacity
           key={button.name}
           style={[
@@ -27,6 +28,10 @@ const ButtonBar = ({ navigation, activeScreen }) => {
           ]}
           onPress={() => handlePress(button.screen)}
         >
+          <Image
+            source={activeScreen === button.screen ? button.activeIcon : button.icon}
+            style={styles.icon}
+          />
           <Text
             style={[
               styles.buttonText,
@@ -44,9 +49,9 @@ const ButtonBar = ({ navigation, activeScreen }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5EA',
+    backgroundColor: '#FBFBFC',
+    borderTopWidth: .5,
+    borderTopColor: '#E6E6E7',
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -58,18 +63,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  activeButton: {
-    borderTopWidth: 2,
-    borderTopColor: '#007AFF', // iOS blue
-  },
   buttonText: {
     fontSize: 12,
-    color: '#8E8E93', // iOS gray
+    fontFamily: 'Figtree',
+    fontWeight: '500',
+    color: '#B3B3BB'
   },
   activeButtonText: {
-    color: '#007AFF', // iOS blue
     fontWeight: '500',
+    color: '#20859E'
   },
+  icon: {
+    width: 24,
+    height: 24,
+    marginBottom: 4
+  }
 });
 
 export default ButtonBar;

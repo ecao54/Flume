@@ -36,6 +36,12 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   };
 
+  const connectedBanks = [
+    {name: "Bank of America", lastFourNumbers: "1234", image: require('../assets/bank-of-america.png')},
+  ];
+
+  
+
   if (isLoading) {
     return (
       <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
@@ -46,9 +52,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.content}>
-        <Text style={styles.title}>Profile</Text>
-        
+      <SafeAreaView style={styles.content}>        
         <View style={styles.profileHeader}>
           <Image
             source={require('../assets/default-profile.png')}
@@ -65,10 +69,36 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
         
         <View style={styles.balanceCard}>
-          <Text style={styles.cardTitle}>Balance</Text>
+          <Text style={styles.cardTitle}>FLUME BALANCE</Text>
           <Text style={styles.balanceAmount}>
             ${profile?.balance ? profile.balance.toFixed(2) : '0.00'}
           </Text>
+        </View>
+
+        <View style={styles.banksAndCards}>
+          <Text style={styles.banksAndCardsLabel}>Banks and cards</Text>
+          {connectedBanks.map((bank) => (
+                  
+            <TouchableOpacity
+              key={bank.name}
+            >
+              {/* <Image
+                source={bank.image}
+                style={styles.bankImage}
+              /> */}
+              <Text
+                style={[
+                  styles.bankText,
+                ]}
+              >
+                {bank.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+          <View style={styles.addContainer}>
+            <Image style={styles.addButton} source={require('../assets/add.png')}/>
+            <Text style={styles.addText}>Add a bank or card</Text>
+          </View>
         </View>
         
         <View style={styles.menuSection}>
