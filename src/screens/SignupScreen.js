@@ -84,13 +84,16 @@ const SignupScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Create Profile</Text>
-        <Text style={styles.subtitle}>Join Flume for seamless payments</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Sign up for</Text>
+          <Text style={(styles.title,styles.flume)}> Flume</Text>
+        </View>
         
         <View style={styles.formContainer}>
+          <Text style={styles.inputLabel}>Username</Text>
           <TextInput
             style={styles.input}
-            placeholder="Username (letters, numbers, underscores only)"
+            placeholder="Enter username"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -98,25 +101,28 @@ const SignupScreen = ({ navigation }) => {
             maxLength={15}
           />
           
+          <Text style={styles.inputLabel}>First Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="First Name"
+            placeholder="Enter first name"
             value={firstName}
             onChangeText={setFirstName}
             autoCapitalize="words"
           />
           
+          <Text style={styles.inputLabel}>Last Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="Last Name"
+            placeholder="Enter last name"
             value={lastName}
             onChangeText={setLastName}
             autoCapitalize="words"
           />
           
+          <Text style={styles.inputLabel}>Starting Balance</Text>
           <TextInput
             style={styles.input}
-            placeholder="Starting Balance"
+            placeholder="Enter starting balance"
             value={balance}
             onChangeText={setBalance}
             keyboardType="decimal-pad"
@@ -130,14 +136,14 @@ const SignupScreen = ({ navigation }) => {
             {isLoading ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.buttonText}>Create Profile</Text>
+              <Text style={styles.buttonText}>Sign Up</Text>
             )}
           </TouchableOpacity>
           
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have a profile? </Text>
+            <Text style={styles.footerText}>Already have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.loginText}>Sign In</Text>
+              <Text style={styles.loginText}>Log In</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -149,56 +155,66 @@ const SignupScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#FBFBFC',
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    justifyContent: 'top',
+    alignItems: 'left',
+    padding: 28,
+    marginTop: 26,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    marginBottom: 36,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    fontFamily: 'System',
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#20859E',
+    fontFamily: 'Figtree',
   },
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 30,
-    color: '#8E8E93',
-    fontFamily: 'System',
+  flume: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#20859E',
+    fontFamily: 'Figtree',
+    fontStyle: 'italic'
   },
   formContainer: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontFamily: 'Figtree',
+    fontWeight: '500',
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
+    borderColor: '#C4C4C5',
+    borderRadius: 10,
+    paddingTop: 14,
+    paddingRight: 12,
+    paddingBottom: 14,
+    paddingLeft: 12,
+    marginBottom: 16,
     fontSize: 16,
+    fontFamily: 'Figtree',
+    fontWeight: '400'
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#62B6CB',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
   },
   buttonText: {
-    color: 'white',
+    color: '#FBFBFC',
     fontSize: 18,
-    fontWeight: '600',
-    fontFamily: 'System',
+    fontWeight: '700',
+    fontFamily: 'FigTree',
   },
   footer: {
     flexDirection: 'row',
@@ -206,13 +222,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    color: '#8E8E93',
-    fontSize: 16,
+    fontFamily: 'Figtree',
+    fontWeight: '400',
+    color: '#39393E',
+    fontSize: 18,
   },
   loginText: {
-    color: '#007AFF',
-    fontSize: 16,
-    fontWeight: '500',
+    color: '#20859E',
+    fontSize: 18,
+    fontWeight: '400',
   },
 });
 

@@ -48,6 +48,7 @@ const App = () => {
       <Stack.Navigator 
           initialRouteName={initialRoute}
           screenOptions={{
+            animation: 'none',
             animationEnabled: false
           }}
         >

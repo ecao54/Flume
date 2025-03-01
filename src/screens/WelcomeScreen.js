@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 15,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
   },
   loginButton: {
     backgroundColor: '#E9F5F5',
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: 'Figtree',
     color: '#FBFBFC',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
   loginText: {
