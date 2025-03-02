@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'top',
     alignItems: 'left',
-    paddingBottom: 80, // Add padding to account for the button bar
+    marginBottom: 80
   },
   title: {
     flexDirection: 'row',
