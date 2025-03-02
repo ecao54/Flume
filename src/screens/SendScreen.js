@@ -16,7 +16,8 @@ import {
   Alert,
   ActivityIndicator,
   Platform,
-  Linking
+  Linking,
+  ScrollView
 } from 'react-native';
 import { BleManager, LogLevel } from 'react-native-ble-plx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -501,120 +502,122 @@ const SendScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
-        <Text style={styles.title}>Send Payment</Text>
-        
-        {userProfile && (
-          <View style={styles.balanceContainer}>
-            <Text style={styles.balanceLabel}>Your Balance</Text>
-            <Text style={styles.balanceAmount}>${userProfile.balance.toFixed(2)}</Text>
-          </View>
-        )}
-        
-        <View style={styles.scanSection}>
-          <TouchableOpacity
-            style={[
-              styles.scanButton,
-              isScanning && styles.scanningButton
-            ]}
-            onPress={isScanning ? stopScan : startScan}
-          >
-            {isScanning ? (
-              <View style={styles.scanningContainer}>
-                <Text style={styles.scanButtonText}>Scanning</Text>
-                <ActivityIndicator color="#FFFFFF" size="small" style={styles.scanningIndicator} />
-              </View>
-            ) : (
-              <Text style={styles.scanButtonText}>Scan for Receivers</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-        
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
-        
-        {error && receivers.length === 0 && (
-          <TouchableOpacity
-            style={styles.rescanButton}
-            onPress={startScan}
-          >
-            <Text style={styles.rescanButtonText}>Try Again</Text>
-          </TouchableOpacity>
-        )}
-        
-        {receivers.length > 0 && (
-          <View style={styles.receiversContainer}>
-            <Text style={styles.sectionTitle}>
-              {receivers.length} {receivers.length === 1 ? 'Receiver' : 'Receivers'} Found
-            </Text>
-            <FlatList
-              data={receivers
-                // Sort by: First Flume devices, then known usernames, then by signal strength
-                .sort((a, b) => {
-                  // Flume devices first
-                  if (a.isFlume && !b.isFlume) return -1;
-                  if (!a.isFlume && b.isFlume) return 1;
-                  
-                  // Then by signal strength
-                  return (b.rssi || -100) - (a.rssi || -100);
-                })
-              }
-              renderItem={renderReceiverItem}
-              keyExtractor={item => item.id || Math.random().toString()}
-              style={styles.receiverList}
-            />
-          </View>
-        )}
-        
-        {selectedReceiver && (
-          <View style={styles.paymentContainer}>
-            <Text style={styles.sectionTitle}>Payment Details</Text>
-            <Text style={styles.selectedReceiverText}>
-              <Text style={styles.selectedReceiverLabel}>To: </Text>
-              <Text style={styles.selectedReceiverName}>{selectedReceiver.fullName}</Text>
-              {'\n'}
-              <Text style={styles.selectedReceiverLabel}>Username: </Text>
-              <Text style={styles.selectedReceiverUsername}>@{selectedReceiver.username}</Text>
-            </Text>
-            
-            <TextInput
-              style={styles.amountInput}
-              placeholder="Enter amount"
-              keyboardType="decimal-pad"
-              value={amount}
-              onChangeText={setAmount}
-            />
-            
-            <TouchableOpacity 
+        <ScrollView>
+          <Text style={styles.title}>Send Payments</Text>
+  {/*         
+          {userProfile && (
+            <View style={styles.balanceContainer}>
+              <Text style={styles.balanceLabel}>Your Balance</Text>
+              <Text style={styles.balanceAmount}>${userProfile.balance.toFixed(2)}</Text>
+            </View>
+          )} */}
+          
+          <View style={styles.scanSection}>
+            <TouchableOpacity
               style={[
-                styles.sendButton,
-                (!amount || 
-                 isNaN(parseFloat(amount)) || 
-                 parseFloat(amount) <= 0 ||
-                 (userProfile && parseFloat(amount) > userProfile.balance)) && 
-                styles.sendButtonDisabled
+                styles.scanButton,
+                isScanning && styles.scanningButton
               ]}
-              onPress={sendPayment}
-              disabled={!amount || 
-                      isNaN(parseFloat(amount)) || 
-                      parseFloat(amount) <= 0 ||
-                      (userProfile && parseFloat(amount) > userProfile.balance)}
+              onPress={isScanning ? stopScan : startScan}
             >
-              <Text style={styles.sendButtonText}>Send Payment</Text>
+              {isScanning ? (
+                <View style={styles.scanningContainer}>
+                  <Text style={styles.scanButtonText}>Scanning</Text>
+                  <ActivityIndicator color="#FFFFFF" size="small" style={styles.scanningIndicator} />
+                </View>
+              ) : (
+                <Text style={styles.scanButtonText}>Scan for Receivers</Text>
+              )}
             </TouchableOpacity>
           </View>
-        )}
-        
-        {!selectedReceiver && !isScanning && allDevices.length > 0 && (
-          <View style={styles.debugSection}>
-            <Text style={styles.debugTitle}>Debug Info - All Devices ({allDevices.length})</Text>
-            {allDevices.map((device, index) => (
-              <Text key={device.id || index} style={styles.debugDevice}>
-                • {device.name || 'Unnamed'} ({(device.id || "").substring(0, 8)}...) RSSI: {device.rssi || 'unknown'}
+          
+          {error && (
+            <Text style={styles.errorText}>{error}</Text>
+          )}
+{/*           
+          {error && receivers.length === 0 && (
+            <TouchableOpacity
+              style={styles.rescanButton}
+              onPress={startScan}
+            >
+              <Text style={styles.rescanButtonText}>Try Again</Text>
+            </TouchableOpacity>
+          )} */}
+          
+          {receivers.length > 0 && (
+            <View style={styles.receiversContainer}>
+              <Text style={styles.sectionTitle}>
+                {receivers.length} {receivers.length === 1 ? 'Receiver' : 'Receivers'} Found
               </Text>
-            ))}
-          </View>
-        )}
+              <FlatList
+                data={receivers
+                  // Sort by: First Flume devices, then known usernames, then by signal strength
+                  .sort((a, b) => {
+                    // Flume devices first
+                    if (a.isFlume && !b.isFlume) return -1;
+                    if (!a.isFlume && b.isFlume) return 1;
+                    
+                    // Then by signal strength
+                    return (b.rssi || -100) - (a.rssi || -100);
+                  })
+                }
+                renderItem={renderReceiverItem}
+                keyExtractor={item => item.id || Math.random().toString()}
+                style={styles.receiverList}
+              />
+            </View>
+          )}
+          
+          {selectedReceiver && (
+            <View style={styles.paymentContainer}>
+              <Text style={styles.sectionTitle}>Payment Details</Text>
+              <Text style={styles.selectedReceiverText}>
+                <Text style={styles.selectedReceiverLabel}>To: </Text>
+                <Text style={styles.selectedReceiverName}>{selectedReceiver.fullName}</Text>
+                {'\n'}
+                <Text style={styles.selectedReceiverLabel}>Username: </Text>
+                <Text style={styles.selectedReceiverUsername}>@{selectedReceiver.username}</Text>
+              </Text>
+              
+              <TextInput
+                style={styles.amountInput}
+                placeholder="Enter amount"
+                keyboardType="decimal-pad"
+                value={amount}
+                onChangeText={setAmount}
+              />
+              
+              <TouchableOpacity 
+                style={[
+                  styles.sendButton,
+                  (!amount || 
+                  isNaN(parseFloat(amount)) || 
+                  parseFloat(amount) <= 0 ||
+                  (userProfile && parseFloat(amount) > userProfile.balance)) && 
+                  styles.sendButtonDisabled
+                ]}
+                onPress={sendPayment}
+                disabled={!amount || 
+                        isNaN(parseFloat(amount)) || 
+                        parseFloat(amount) <= 0 ||
+                        (userProfile && parseFloat(amount) > userProfile.balance)}
+              >
+                <Text style={styles.sendButtonText}>Send Payment</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          
+          {!selectedReceiver && !isScanning && allDevices.length > 0 && (
+            <View style={styles.debugSection}>
+              <Text style={styles.debugTitle}>Debug Info - All Devices ({allDevices.length})</Text>
+              {allDevices.map((device, index) => (
+                <Text key={device.id || index} style={styles.debugDevice}>
+                  • {device.name || 'Unnamed'} ({(device.id || "").substring(0, 8)}...) RSSI: {device.rssi || 'unknown'}
+                </Text>
+              ))}
+            </View>
+          )}
+        </ScrollView>
       </SafeAreaView>
       
       <ButtonBar navigation={navigation} activeScreen="Send" />
@@ -625,55 +628,55 @@ const SendScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7', // iOS light background
+    backgroundColor: '#FBFBFC', // iOS light background
   },
   content: {
     flex: 1,
-    padding: 20,
-    paddingBottom: 80, // Add padding to account for the button bar
+    marginTop: 26,
+    marginBottom: 80, // Add padding to account for the button bar
+    marginHorizontal: 28
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 20,
-    color: '#000000',
-    textAlign: 'center',
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#20859E',
+    fontFamily: 'Figtree',
+    marginBottom: 36,
   },
-  balanceContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-  },
-  balanceLabel: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginBottom: 5,
-  },
-  balanceAmount: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#000000',
-  },
+  // balanceContainer: {
+  //   backgroundColor: '#FFFFFF',
+  //   borderRadius: 10,
+  //   padding: 15,
+  //   marginBottom: 20,
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 1 },
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 1,
+  // },
+  // balanceLabel: {
+  //   fontSize: 14,
+  //   color: '#8E8E93',
+  //   marginBottom: 5,
+  // },
+  // balanceAmount: {
+  //   fontSize: 24,
+  //   fontWeight: '600',
+  //   color: '#000000',
+  // },
   scanSection: {
     alignItems: 'center',
     marginBottom: 20,
   },
   scanButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    backgroundColor: '#62B6CB',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
     width: '100%',
   },
   scanningButton: {
-    backgroundColor: '#8E8E93',
+    backgroundColor: '#BEE9E8',
   },
   scanningContainer: {
     flexDirection: 'row',
@@ -681,30 +684,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scanButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 16,
+    color: '#FBFBFC',
+    fontWeight: '700',
+    fontSize: 18,
+    fontFamily: 'Figtree',
   },
   scanningIndicator: {
     marginLeft: 10,
   },
   errorText: {
-    color: '#FF3B30', // iOS red
-    textAlign: 'center',
+    color: '#D9251D', // iOS red
     marginBottom: 15,
     fontWeight: '500',
   },
-  rescanButton: {
-    marginTop: 10,
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 8,
-    alignSelf: 'center',
-  },
-  rescanButtonText: {
-    color: 'white',
-    fontWeight: '500',
-  },
+  // rescanButton: {
+  //   marginTop: 10,
+  //   backgroundColor: '#007AFF',
+  //   padding: 10,
+  //   borderRadius: 8,
+  //   alignSelf: 'center',
+  // },
+  // rescanButtonText: {
+  //   color: 'white',
+  //   fontWeight: '500',
+  // },
   receiversContainer: {
     marginTop: 10,
   },
@@ -715,7 +718,6 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   receiverList: {
-    maxHeight: 200,
   },
   receiverItem: {
     padding: 15,

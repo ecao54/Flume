@@ -43,67 +43,67 @@ const App = () => {
   }
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-      <Stack.Navigator 
-          initialRouteName={initialRoute}
-          screenOptions={{
-            animation: 'none',
-            animationEnabled: false
-          }}
-        >
-          <Stack.Screen 
-            name="Welcome" 
-            component={WelcomeScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Login" 
-            component={LoginScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Signup" 
-            component={SignupScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen} 
-            options={{ headerShown: false }}
-            initialParams={userProfile ? {
-              userId: userProfile.userId,
-              customerName: `${userProfile.firstName} ${userProfile.lastName}`,
-              balance: userProfile.balance
-            } : undefined}
-          />
-          <Stack.Screen 
-            name="Send" 
-            component={SendScreen} 
-            options={{ 
-              headerBackTitle: 'Back',
-              headerTintColor: '#007AFF', // iOS blue
-            }}
-          />
-          <Stack.Screen 
-            name="Receive" 
-            component={ReceiveScreen} 
-            options={{ 
-              headerBackTitle: 'Back',
-              headerTintColor: '#007AFF', // iOS blue
-            }}
-          />
-          <Stack.Screen 
-            name="Profile" 
-            component={ProfileScreen} 
-            options={{ 
-              headerShown: false,
+      <SafeAreaProvider>
+        <NavigationContainer>
+        <Stack.Navigator 
+            initialRouteName={initialRoute}
+            screenOptions={{
+              animation: 'none',
               animationEnabled: false
             }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+          >
+            <Stack.Screen 
+              name="Welcome" 
+              component={WelcomeScreen} 
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="Login" 
+              component={LoginScreen} 
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="Signup" 
+              component={SignupScreen} 
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="Home" 
+              component={HomeScreen} 
+              options={{ headerShown: false }}
+              initialParams={userProfile ? {
+                userId: userProfile.userId,
+                customerName: `${userProfile.firstName} ${userProfile.lastName}`,
+                balance: userProfile.balance
+              } : undefined}
+            />
+            <Stack.Screen 
+              name="Send" 
+              component={SendScreen} 
+              options={{ 
+                headerBackTitle: 'Back',
+                headerTintColor: '#007AFF', // iOS blue
+              }}
+            />
+            <Stack.Screen 
+              name="Receive" 
+              component={ReceiveScreen} 
+              options={{ 
+                headerBackTitle: 'Back',
+                headerTintColor: '#007AFF', // iOS blue
+              }}
+            />
+            <Stack.Screen 
+              name="Profile" 
+              component={ProfileScreen} 
+              options={{ 
+                headerShown: false,
+                animationEnabled: false
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
   );
 };
 

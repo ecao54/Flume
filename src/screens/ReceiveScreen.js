@@ -60,11 +60,11 @@ const ReceiveScreen = ({ navigation }) => {
         
         if (state !== 'PoweredOn') {
           console.log('Bluetooth is not powered on');
-          Alert.alert(
-            'Bluetooth Required',
-            'Please enable Bluetooth in Settings to allow others to find you.',
-            [{ text: 'OK' }]
-          );
+          // Alert.alert(
+          //   'Bluetooth Required',
+          //   'Please enable Bluetooth in Settings to allow others to find you.',
+          //   [{ text: 'OK' }]
+          // );
           console.warn('Proceeding despite Bluetooth not being powered on');
         }
 
@@ -469,7 +469,7 @@ const ReceiveScreen = ({ navigation }) => {
           disabled={!bleReady}
         >
           <Text style={styles.buttonText}>
-            {isAdvertising ? "Stop Receiving" : "Start Receiving"}
+            {isAdvertising ? "Finish Receiving Payments" : "Receive Payments"}
           </Text>
         </TouchableOpacity>
         
@@ -555,21 +555,21 @@ const ReceiveScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#FBFBFC',
   },
   content: {
     flex: 1,
     padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 80,
+    marginTop: 26,
+    marginBottom: 80,
+    marginHorizontal: 28,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 20,
-    color: '#000000',
-    fontFamily: 'System',
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#20859E',
+    fontFamily: 'Figtree',
+    marginBottom: 36,
   },
   accountInfo: {
     width: '100%',
@@ -593,25 +593,26 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
   },
   button: {
-    width: '100%',
-    padding: 16,
-    borderRadius: 10,
+    backgroundColor: '#62B6CB',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    backgroundColor: '#007AFF',
+    width: '100%',
   },
   buttonStop: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#62B6CB',
   },
   buttonStart: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#62B6CB',
   },
   buttonDisabled: {
     backgroundColor: '#CCCCCC',
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#FBFBFC',
+    fontSize: 18,
+    fontWeight: '700',
+    fontFamily: 'Figtree'
   },
   indicatorContainer: {
     alignItems: 'center',

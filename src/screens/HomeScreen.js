@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, ScrollView } from 'react-native';
 import NessieService from '../services/NessieService';
 import ButtonBar from '../components/ButtonBar';
+import ReceivePaymentsDrawer from '../components/ReceivingPayments';
 
 const HomeScreen = ({ navigation, route }) => {
   const [transactions, setTransactions] = useState([]);
   const { customerId, accountId, customerName } = route.params || {};
   const [balance, setBalance] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -51,6 +53,20 @@ const HomeScreen = ({ navigation, route }) => {
               {/* Transaction list will go here */}
             </View>
           )}
+
+          
+
+          {/* <Button 
+            title="Receive Payment"
+            onPress={() => setIsDrawerVisible(true)}
+          />
+
+          {isDrawerVisible && (
+            <ReceivePaymentsDrawer
+              visible={isDrawerVisible}
+              onClose={() => setIsDrawerVisible(false)}
+            />
+          )} */}
         </ScrollView>
       </SafeAreaView>
       
